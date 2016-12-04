@@ -21,10 +21,10 @@
     [ (op . args) (cons op (map normalize->binary args)) ]
     ))
 
-(define (expand-vars expr var expand-to)
+(define (expand-var expr var expand-to)
   (match expr
     [ (? (pa$ eq? var) expr) expand-to ]
-    [ (op . args) (cons op (map expand-vars args)) ]
+    [ (op . args) (cons op (map (cut expand-var <> var expand-to) args)) ]
     [ () '() ]
     ))
 
