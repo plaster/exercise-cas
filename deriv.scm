@@ -43,6 +43,17 @@
          (* ,lhs ,(d/d var rhs))
          )
      ]
+    [ ('exp arg)
+     (match arg
+       [ (? (pa$ eq? var) arg) expr ]
+       [ (? symbol? var) 0 ]
+       [ (? number? var) 0 ]
+       [ else
+         (let1 newvar (gensym)
+           `(* ,(d/d var arg)
+               ,(expand-var (d/d newvar `(exp ,newvar))
+                            newvar arg))
+           ) ] ) ]
     ))
 
 ;; TODO: 定数たたみこみ
