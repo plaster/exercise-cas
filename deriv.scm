@@ -28,6 +28,12 @@
     [ () '() ]
     ))
 
+(define (%d/d-composed var op arg)
+  (let1 newvar (gensym)
+    `(* ,(d/d var arg)
+        ,(expand-var (d/d newvar `(,op ,newvar))
+                     newvar arg) ) ) )
+
 (define (d/d var expr)
   (match expr
     [ (? (pa$ eq? var) expr) 1 ]
@@ -46,14 +52,8 @@
     [ ('exp arg)
      (match arg
        [ (? (pa$ eq? var) arg) expr ]
-       [ (? symbol? var) 0 ]
-       [ (? number? var) 0 ]
        [ else
-         (let1 newvar (gensym)
-           `(* ,(d/d var arg)
-               ,(expand-var (d/d newvar `(exp ,newvar))
-                            newvar arg))
-           ) ] ) ]
+         (%d/d-composed var 'exp arg) ] ) ]
     ))
 
 ;; TODO: 定数たたみこみ
