@@ -41,34 +41,26 @@
     [ (? number? expr) 0 ]
     [ ('+ lhs rhs)
      `(+ ,(d/d var lhs)
-         ,(d/d var rhs)
-         )
-     ]
+         ,(d/d var rhs) ) ]
     [ ('* lhs rhs)
      `(+ (* ,(d/d var lhs) ,rhs)
-         (* ,lhs ,(d/d var rhs))
-         )
-     ]
+         (* ,lhs ,(d/d var rhs)) ) ]
     [ ('exp arg)
      (match arg
        [ (? (pa$ eq? var)) expr ]
-       [ else
-         (%d/d-composed var 'exp arg) ] ) ]
+       [ else (%d/d-composed var 'exp arg) ] ) ]
     [ ('log arg)
      (match arg
        [ (? (pa$ eq? var)) `(/ 1 ,arg) ]
-       [ else
-         (%d/d-composed var 'log arg) ] ) ]
+       [ else (%d/d-composed var 'log arg) ] ) ]
     [ ('sin arg)
      (match arg
        [ (? (pa$ eq? var)) `(cos ,arg) ]
-       [ else
-         (%d/d-composed var 'sin arg) ] ) ]
+       [ else (%d/d-composed var 'sin arg) ] ) ]
     [ ('cos arg)
      (match arg
        [ (? (pa$ eq? var)) `(* -1 (sin ,arg)) ]
-       [ else
-         (%d/d-composed var 'cos arg) ] ) ]
+       [ else (%d/d-composed var 'cos arg) ] ) ]
     ))
 
 ;; TODO: 定数たたみこみ
