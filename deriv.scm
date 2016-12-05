@@ -51,6 +51,10 @@
     [ ('* lhs rhs)
      `(+ (* ,(d/d var lhs) ,rhs)
          (* ,lhs ,(d/d var rhs)) ) ]
+    [ ('/ lhs rhs)
+     `(/ (+ (* ,(d/d var lhs) ,rhs)
+            (* -1 (* ,(d/d var rhs) ,lhs)) )
+         (* ,rhs ,rhs)) ]
     [ ('exp arg)
      (match arg
        [ (? (pa$ eq? var)) expr ]
