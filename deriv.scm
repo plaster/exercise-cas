@@ -34,6 +34,12 @@
         ,(expand-var (d/d newvar `(,op ,newvar))
                      newvar arg) ) ) )
 
+(define (%d/d-inverted invop y)
+  (let1 newvar (gensym)
+    `(/ 1
+        ,(expand-var (d/d newvar `(,invop ,newvar))
+                     newvar y) ) ) )
+
 (define (d/d var expr)
   (match expr
     [ (? (pa$ eq? var) expr) 1 ]
@@ -50,9 +56,7 @@
        [ (? (pa$ eq? var)) expr ]
        [ else (%d/d-composed var 'exp arg) ] ) ]
     [ ('log arg)
-     (match arg
-       [ (? (pa$ eq? var)) `(/ 1 ,arg) ]
-       [ else (%d/d-composed var 'log arg) ] ) ]
+     (%d/d-inverted 'exp expr)]
     [ ('sin arg)
      (match arg
        [ (? (pa$ eq? var)) `(cos ,arg) ]
@@ -61,6 +65,14 @@
      (match arg
        [ (? (pa$ eq? var)) `(* -1 (sin ,arg)) ]
        [ else (%d/d-composed var 'cos arg) ] ) ]
+    [ ('tan arg)
+     (d/d var `(/ (sin ,arg) (cos ,arg))) ]
+    [ ('arcsin arg)
+     (%d/d-inverted 'sin expr) ]
+    [ ('arccos arg)
+     (%d/d-inverted 'cos expr) ]
+    [ ('arctan arg)
+     (%d/d-inverted 'tan expr) ]
     ))
 
 ;; TODO: 定数たたみこみ
