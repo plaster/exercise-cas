@@ -24,6 +24,7 @@
 (define (expand-var expr var expand-to)
   (match expr
     [ (? (pa$ eq? var) expr) expand-to ]
+    [ (? number?) expr ]
     [ (op . args) (cons op (map (cut expand-var <> var expand-to) args)) ]
     [ () '() ]
     ))
