@@ -54,6 +54,21 @@
        [ (? (pa$ eq? var)) expr ]
        [ else
          (%d/d-composed var 'exp arg) ] ) ]
+    [ ('log arg)
+     (match arg
+       [ (? (pa$ eq? var)) `(/ 1 ,arg) ]
+       [ else
+         (%d/d-composed var 'log arg) ] ) ]
+    [ ('sin arg)
+     (match arg
+       [ (? (pa$ eq? var)) `(cos ,arg) ]
+       [ else
+         (%d/d-composed var 'sin arg) ] ) ]
+    [ ('cos arg)
+     (match arg
+       [ (? (pa$ eq? var)) `(* -1 (sin ,arg)) ]
+       [ else
+         (%d/d-composed var 'cos arg) ] ) ]
     ))
 
 ;; TODO: 定数たたみこみ
