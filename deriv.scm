@@ -37,8 +37,8 @@
 (define (d/d var expr)
   (match expr
     [ (? (pa$ eq? var) expr) 1 ]
-    [ (? symbol? var) 0 ]
-    [ (? number? var) 0 ]
+    [ (? symbol? expr) 0 ]
+    [ (? number? expr) 0 ]
     [ ('+ lhs rhs)
      `(+ ,(d/d var lhs)
          ,(d/d var rhs)
@@ -51,7 +51,7 @@
      ]
     [ ('exp arg)
      (match arg
-       [ (? (pa$ eq? var) arg) expr ]
+       [ (? (pa$ eq? var)) expr ]
        [ else
          (%d/d-composed var 'exp arg) ] ) ]
     ))
