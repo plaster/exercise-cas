@@ -23,23 +23,23 @@
 
 (define (simplify1 expr)
   (match expr
-    [ ('- lhs rhs)
-     `(+ ,(simplify1 lhs) (* -1 ,(simplify1 rhs))) ]
-    [ ('+ 0 rhs) rhs ]
-    [ ('+ lhs 0) lhs ]
-    [ ('+ (? number? lhs) (? number? rhs))
-     (+ lhs rhs) ]
+    [ `(- ,lhs ,rhs)
+      `(+ ,(simplify1 lhs) (* -1 ,(simplify1 rhs))) ]
+    [ `(+ 0 ,rhs) rhs ]
+    [ '(+ ,lhs 0) lhs ]
+    [ `(+ ,(? number? lhs) ,(? number? rhs))
+      (+ lhs rhs) ]
 
-    [ ('* 0 rhs) 0 ]
-    [ ('* lhs 0) 0 ]
-    [ ('* 1 rhs) rhs ]
-    [ ('* lhs 1) lhs ]
-    [ ('* (? number? lhs) (? number? rhs))
-     (* lhs rhs) ]
+    [ `(* 0 ,rhs) 0 ]
+    [ `(* ,lhs 0) 0 ]
+    [ `(* 1 ,rhs) rhs ]
+    [ `(* ,lhs 1) lhs ]
+    [ `(* ,(? number? lhs) ,(? number? rhs))
+      (* lhs rhs) ]
 
-    [ ('/ lhs 1) lhs ]
-    [ ('/ (? number? lhs) (? number? rhs))
-     (/ lhs rhs) ]
+    [ `(/ ,lhs 1) lhs ]
+    [ `(/ ,(? number? lhs) ,(? number? rhs))
+      (/ lhs rhs) ]
 
     [ `(,unop ,x)
       `(,unop ,(simplify1 x)) ]
