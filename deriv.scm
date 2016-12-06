@@ -75,11 +75,11 @@
        [ else (%d/d-composed var 'cos arg) ] ) ]
     [ ('tan arg)
      (d/d var `(/ (sin ,arg) (cos ,arg))) ]
-    [ ('arcsin arg)
+    [ ('asin arg)
      (%d/d-inverted 'sin expr) ]
-    [ ('arccos arg)
+    [ ('acos arg)
      (%d/d-inverted 'cos expr) ]
-    [ ('arctan arg)
+    [ ('atan arg)
      (%d/d-inverted 'tan expr) ]
     ))
 
