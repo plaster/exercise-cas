@@ -57,6 +57,8 @@
       `(+ ,(simplify2 x)
           (+ ,(simplify2 y)
              ,(simplify2 z))) ]
+    [ `(+ ,(? symbol? x) ,(? number? y))
+      `(+ ,y ,x) ]
     [ `(+ ,(? structured? x) ,(? non-structured? y))
       `(+ ,y ,(simplify2 x)) ]
 
@@ -64,6 +66,8 @@
       `(* ,(simplify2 x)
           (* ,(simplify2 y)
              ,(simplify2 z))) ]
+    [ `(* ,(? symbol? x) ,(? number? y))
+      `(* ,y ,x) ]
     [ `(* (+ ,x ,y) ,z)
       `(+ (* ,(simplify2 x) ,(simplify2 z))
           (* ,(simplify2 y) ,(simplify2 z))) ]
