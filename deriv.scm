@@ -23,42 +23,41 @@
 
 (define (simplify1 expr)
   (match expr
-    [ (? number?) expr ]
-    [ (? symbol?) expr ]
     [ ('- lhs rhs)
-     `(+ ,lhs (* -1 ,rhs)) ]
+     `(+ ,(simplify1 lhs) (* -1 ,(simplify1 rhs))) ]
     [ ('+ 0 rhs) rhs ]
     [ ('+ lhs 0) lhs ]
     [ ('+ (? number? lhs) (? number? rhs))
      (+ lhs rhs) ]
-    [ ('+ lhs rhs)
-     `(+ ,(simplify1 lhs) ,(simplify1 rhs)) ]
+
     [ ('* 0 rhs) 0 ]
     [ ('* lhs 0) 0 ]
     [ ('* 1 rhs) rhs ]
     [ ('* lhs 1) lhs ]
     [ ('* (? number? lhs) (? number? rhs))
      (* lhs rhs) ]
-    [ ('* lhs rhs)
-     `(* ,(simplify1 lhs) ,(simplify1 rhs)) ]
+
     [ ('/ lhs 1) lhs ]
     [ ('/ (? number? lhs) (? number? rhs))
      (/ lhs rhs) ]
-    [ ('/ lhs rhs)
-     `(/ ,(simplify1 lhs) ,(simplify1 rhs)) ]
+
+    [ `(,unop ,x)
+      `(,unop ,(simplify1 x)) ]
+    [ `(,binop ,x ,y)
+      `(,binop ,(simplify1 x) ,(simplify1 y)) ]
+
     [else expr] ) )
 
 (define (simplify2 expr)
   (match expr
-
     [ ('+ ('+ x y) z)
      `(+ ,(simplify2 x)
          (+ ,(simplify2 y)
             ,(simplify2 z))) ]
-    [ ('+ (? (complement number?) x) (? number? y))
+    [ ('+ (? pair? x) (? number? y))
      `(+ ,y ,(simplify2 x)) ]
-    [ ('+ lhs rhs)
-     `(+ ,(simplify2 lhs) ,(simplify2 rhs)) ]
+    [ ('+ (? pair? x) (? symbol? y))
+     `(+ ,y ,(simplify2 x)) ]
 
     [ ('* ('* x y) z)
      `(* ,(simplify2 x)
@@ -70,24 +69,27 @@
     [ ('* x ('+ y z))
      `(+ (* ,(simplify2 x) ,(simplify2 y))
          (* ,(simplify2 x) ,(simplify2 z))) ]
-    [ ('* (? (complement number?) x) (? number? y))
+    [ ('* (? pair? x) (? number? y))
      `(* ,y ,(simplify2 x)) ]
-    [ ('* lhs rhs)
-     `(* ,(simplify2 lhs) ,(simplify2 rhs)) ]
+    [ ('* (? pair? x) (? symbol? y))
+     `(* ,y ,(simplify2 x)) ]
 
     [ ('/ x ('/ y z))
      `(/ (* ,(simplify2 x)
             ,(simplify2 z))
          ,(simplify2 y))
      ]
-    [ ('/ lhs rhs)
-     `(/ ,(simplify2 lhs) ,(simplify2 rhs)) ]
 
     [ ('exp ('log x)) (simplify2 x) ]
     [ ('exp x) `(exp ,(simplify2 x)) ]
 
     [ ('log ('exp x)) (simplify2 x) ]
     [ ('log x) `(log ,(simplify2 x)) ]
+
+    [ `(,unop ,x)
+      `(,unop ,(simplify2 x)) ]
+    [ `(,binop ,x ,y)
+      `(,binop ,(simplify2 x) ,(simplify2 y)) ]
 
     [else expr] ) )
 
@@ -114,6 +116,12 @@
     [ `(+ ,x ,y)
       `(+ ,(simplify3 x)
           ,(simplify3 y) ) ]
+
+    [ `(,unop ,x)
+      `(,unop ,(simplify3 x)) ]
+    [ `(,binop ,x ,y)
+      `(,binop ,(simplify3 x) ,(simplify3 y)) ]
+
     [else expr] ) )
 
 (define ((fix*$ conv) expr)
