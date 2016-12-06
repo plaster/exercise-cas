@@ -29,6 +29,8 @@
     [ '(+ ,x 0) x ]
     [ `(+ ,(? number? x) ,(? number? y))
       (+ x y) ]
+    [ `(+ ,(? number? x) (+ ,(? number? y) ,z))
+      `(+ ,(+ x y) ,z) ]
 
     [ `(* 0 ,y) 0 ]
     [ `(* ,x 0) 0 ]
@@ -36,6 +38,8 @@
     [ `(* ,x 1) x ]
     [ `(* ,(? number? x) ,(? number? y))
       (* x y) ]
+    [ `(* ,(? number? x) (* ,(? number? y) ,z))
+      `(* ,(* x y) ,z) ]
 
     [ `(/ ,x 1) x ]
     [ `(/ ,(? number? x) ,(? number? y))
