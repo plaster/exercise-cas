@@ -50,41 +50,39 @@
 
 (define (simplify2 expr)
   (match expr
-    [ ('+ ('+ x y) z)
-     `(+ ,(simplify2 x)
-         (+ ,(simplify2 y)
-            ,(simplify2 z))) ]
-    [ ('+ (? pair? x) (? number? y))
-     `(+ ,y ,(simplify2 x)) ]
-    [ ('+ (? pair? x) (? symbol? y))
-     `(+ ,y ,(simplify2 x)) ]
+    [ `(+ (+ ,x ,y) ,z)
+      `(+ ,(simplify2 x)
+          (+ ,(simplify2 y)
+             ,(simplify2 z))) ]
+    [ `(+ ,(? pair? x) ,(? number? y))
+      `(+ ,y ,(simplify2 x)) ]
+    [ `(+ ,(? pair? x) ,(? symbol? y))
+      `(+ ,y ,(simplify2 x)) ]
 
-    [ ('* ('* x y) z)
-     `(* ,(simplify2 x)
-         (* ,(simplify2 y)
-            ,(simplify2 z))) ]
-    [ ('* ('+ x y) z)
-     `(+ (* ,(simplify2 x) ,(simplify2 z))
-         (* ,(simplify2 y) ,(simplify2 z))) ]
-    [ ('* x ('+ y z))
-     `(+ (* ,(simplify2 x) ,(simplify2 y))
-         (* ,(simplify2 x) ,(simplify2 z))) ]
-    [ ('* (? pair? x) (? number? y))
-     `(* ,y ,(simplify2 x)) ]
-    [ ('* (? pair? x) (? symbol? y))
-     `(* ,y ,(simplify2 x)) ]
+    [ `(* (* ,x ,y) ,z)
+      `(* ,(simplify2 x)
+          (* ,(simplify2 y)
+             ,(simplify2 z))) ]
+    [ `(* (+ ,x ,y) ,z)
+      `(+ (* ,(simplify2 x) ,(simplify2 z))
+          (* ,(simplify2 y) ,(simplify2 z))) ]
+    [ `(* ,x (+ ,y ,z))
+      `(+ (* ,(simplify2 x) ,(simplify2 y))
+          (* ,(simplify2 x) ,(simplify2 z))) ]
+    [ `(* ,(? pair? x) ,(? number? y))
+      `(* ,y ,(simplify2 x)) ]
+    [ `(* ,(? pair? x) ,(? symbol? y))
+      `(* ,y ,(simplify2 x)) ]
 
-    [ ('/ x ('/ y z))
-     `(/ (* ,(simplify2 x)
-            ,(simplify2 z))
-         ,(simplify2 y))
-     ]
+    [ `(/ ,x (/ ,y ,z))
+      `(/ (* ,(simplify2 x)
+             ,(simplify2 z))
+          ,(simplify2 y))
+      ]
 
-    [ ('exp ('log x)) (simplify2 x) ]
-    [ ('exp x) `(exp ,(simplify2 x)) ]
+    [ `(exp (log ,x)) (simplify2 x) ]
 
-    [ ('log ('exp x)) (simplify2 x) ]
-    [ ('log x) `(log ,(simplify2 x)) ]
+    [ `(log (exp ,x)) (simplify2 x) ]
 
     [ `(,unop ,x)
       `(,unop ,(simplify2 x)) ]
