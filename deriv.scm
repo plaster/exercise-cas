@@ -49,12 +49,15 @@
     [ ('+ lhs rhs)
      `(+ ,(d/d var lhs)
          ,(d/d var rhs) ) ]
+    [ ('- lhs rhs)
+     `(- ,(d/d var lhs)
+         ,(d/d var rhs) ) ]
     [ ('* lhs rhs)
      `(+ (* ,(d/d var lhs) ,rhs)
          (* ,lhs ,(d/d var rhs)) ) ]
     [ ('/ lhs rhs)
-     `(/ (+ (* ,(d/d var lhs) ,rhs)
-            (* -1 (* ,(d/d var rhs) ,lhs)) )
+     `(/ (- (* ,(d/d var lhs) ,rhs)
+            (* ,lhs ,(d/d var rhs)) )
          (* ,rhs ,rhs)) ]
     [ ('exp arg)
      (match arg
