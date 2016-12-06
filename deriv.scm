@@ -48,15 +48,16 @@
 
     [else expr] ) )
 
+(define non-structured? (any-pred number? symbol?))
+(define structured? (complement non-structured?))
+
 (define (simplify2 expr)
   (match expr
     [ `(+ (+ ,x ,y) ,z)
       `(+ ,(simplify2 x)
           (+ ,(simplify2 y)
              ,(simplify2 z))) ]
-    [ `(+ ,(? pair? x) ,(? number? y))
-      `(+ ,y ,(simplify2 x)) ]
-    [ `(+ ,(? pair? x) ,(? symbol? y))
+    [ `(+ ,(? structured? x) ,(? non-structured? y))
       `(+ ,y ,(simplify2 x)) ]
 
     [ `(* (* ,x ,y) ,z)
@@ -69,9 +70,7 @@
     [ `(* ,x (+ ,y ,z))
       `(+ (* ,(simplify2 x) ,(simplify2 y))
           (* ,(simplify2 x) ,(simplify2 z))) ]
-    [ `(* ,(? pair? x) ,(? number? y))
-      `(* ,y ,(simplify2 x)) ]
-    [ `(* ,(? pair? x) ,(? symbol? y))
+    [ `(* ,(? structured? x) ,(? non-structured? y))
       `(* ,y ,(simplify2 x)) ]
 
     [ `(/ ,x (/ ,y ,z))
