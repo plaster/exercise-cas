@@ -57,25 +57,34 @@
       `(+ ,(simplify2 x)
           (+ ,(simplify2 y)
              ,(simplify2 z))) ]
-    [ `(+ ,(? symbol? x) ,(? number? y))
-      `(+ ,y ,x) ]
+    [ `(+ ,(? structured? x) (+ ,(? non-structured? y) ,z))
+      `(+ ,y (+ ,(simplify2 x) ,(simplify2 z))) ]
+    [ `(+ ,(? symbol? x) (+ ,(? number? y) ,z))
+      `(+ ,y (+ ,(simplify2 x) ,(simplify2 z))) ]
     [ `(+ ,(? structured? x) ,(? non-structured? y))
       `(+ ,y ,(simplify2 x)) ]
+    [ `(+ ,(? symbol? x) ,(? number? y))
+      `(+ ,y ,x) ]
 
     [ `(* (* ,x ,y) ,z)
       `(* ,(simplify2 x)
           (* ,(simplify2 y)
              ,(simplify2 z))) ]
+    [ `(* ,(? structured? x) (* ,(? non-structured? y) ,z))
+      `(* ,y (* ,(simplify2 x) ,(simplify2 z))) ]
+    [ `(* ,(? symbol? x) (* ,(? number? y) ,z))
+      `(* ,y (* ,(simplify2 x) ,(simplify2 z))) ]
+    [ `(* ,(? structured? x) ,(? non-structured? y))
+      `(* ,y ,(simplify2 x)) ]
     [ `(* ,(? symbol? x) ,(? number? y))
       `(* ,y ,x) ]
+
     [ `(* (+ ,x ,y) ,z)
       `(+ (* ,(simplify2 x) ,(simplify2 z))
           (* ,(simplify2 y) ,(simplify2 z))) ]
     [ `(* ,x (+ ,y ,z))
       `(+ (* ,(simplify2 x) ,(simplify2 y))
           (* ,(simplify2 x) ,(simplify2 z))) ]
-    [ `(* ,(? structured? x) ,(? non-structured? y))
-      `(* ,y ,(simplify2 x)) ]
 
     [ `(/ ,x (/ ,y ,z))
       `(/ (* ,(simplify2 x)
