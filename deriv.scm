@@ -64,6 +64,12 @@
      `(* ,(simplify2 x)
          (* ,(simplify2 y)
             ,(simplify2 z))) ]
+    [ ('* ('+ x y) z)
+     `(+ (* ,(simplify2 x) ,(simplify2 z))
+         (* ,(simplify2 y) ,(simplify2 z))) ]
+    [ ('* x ('+ y z))
+     `(+ (* ,(simplify2 x) ,(simplify2 y))
+         (* ,(simplify2 x) ,(simplify2 z))) ]
     [ ('* (? (complement number?) x) (? number? y))
      `(* ,y ,(simplify2 x)) ]
     [ ('* lhs rhs)
