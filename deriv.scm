@@ -91,6 +91,31 @@
 
     [else expr] ) )
 
+(define (simplify3 expr)
+  (match expr
+    [ `(+ (* ,(? number? a) ,x)
+          (* ,(? number? b) ,y)
+          )
+      (=> next)
+      (or (equal? x y) (next))
+      `(* ,(+ a b) ,x) ]
+    [ `(+ (* ,(? number? a) ,x) ,y)
+      (=> next)
+      (or (equal? x y) (next))
+      `(* ,(+ 1 a) ,x) ]
+    [ `(+ ,x (* ,(? number? a) ,y))
+      (=> next)
+      (or (equal? x y) (next))
+      `(* ,(+ 1 a) ,x) ]
+    [ `(+ ,x ,y)
+      (=> next)
+      (or (equal? x y) (next))
+      `(* 2 ,x) ]
+    [ `(+ ,x ,y)
+      `(+ ,(simplify3 x)
+          ,(simplify3 y) ) ]
+    [else expr] ) )
+
 (define ((fix*$ conv) expr)
   (let loop [[expr expr]]
     (let1 converted (conv expr)
@@ -101,6 +126,7 @@
 (define simplify*
   (fix*$ (.$ (fix*$ simplify1)
              (fix*$ simplify2)
+             (fix*$ simplify3)
              )))
 
 (define (expand-var expr var expand-to)
